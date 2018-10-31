@@ -3,7 +3,7 @@
 var transactionReportApp = angular.module('transactionReportApp', ['ngFileUpload']);
 
 
-/* This Controller is used to parse the csv date and sort data based on selected colomn */
+/* This Controller is used to parse the csv data and sort data based on selected colomn */
 transactionReportApp.controller('CSVReportCtrl', function($scope, $window, $filter) {
 
     var sortFlag = false;

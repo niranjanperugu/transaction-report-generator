@@ -29,7 +29,7 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="transactionReport">Customer Report</a></li>
+                    <li class="active"><a href="transactionReport">Transaction Report</a></li>
                     <li><a href="CSVReport">CSV Report</a></li>
                 </ul>
             </div>
