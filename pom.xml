@@ -76,6 +76,7 @@
 		</dependency>
 	</dependencies>
 	<build>
+	<finalName>transaction-report-generator</finalName>
 		<plugins>
 			<!-- Package as an executable jar/war -->
 			<plugin>

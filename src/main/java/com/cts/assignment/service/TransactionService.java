@@ -1,9 +1,11 @@
 package com.cts.assignment.service;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import javax.xml.bind.JAXBException;
 
-import org.springframework.web.servlet.ModelAndView;
-
+import com.cts.assignment.domian.Record;
 import com.cts.assignment.domian.Records;
 
 /**
@@ -22,5 +24,5 @@ public interface TransactionService {
 	 * @return ModelAndView
 	 * @throws JAXBException
 	 */
-	public ModelAndView initiateTransaction(Records records, ModelAndView modelAndView) throws JAXBException;
+	public Map<String, ArrayList<Record>> initiateTransaction(Records records) throws JAXBException;
 }
