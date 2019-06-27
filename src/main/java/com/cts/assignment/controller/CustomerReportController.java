@@ -43,7 +43,7 @@ public class CustomerReportController {
 	public Map<String, ArrayList<Record>> singleFileUpload(@RequestParam("file") MultipartFile file)
 			throws JAXBException, IOException {
 
-		Map<String, ArrayList<Record>> result = new HashMap<>();;
+		Map<String, ArrayList<Record>> result = new HashMap<>();
 		if (file.isEmpty()) {
 			return result;
 		}
