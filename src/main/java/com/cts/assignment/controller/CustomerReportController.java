@@ -2,30 +2,35 @@ package com.cts.assignment.controller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
+import com.cts.assignment.domian.Record;
 import com.cts.assignment.domian.Records;
 import com.cts.assignment.service.TransactionService;
 import com.cts.assignment.util.CommonUtil;
 
 /**
- * Customer Report Controller used for mapping report related requests
+ * Customer Report Rest Controller used for mapping report related requests
  * 
  * @author Niranjan Perugu
  *
  */
-@Controller
+@RestController
+@RequestMapping("/transaction")
 public class CustomerReportController {
 
 	@Autowired
@@ -33,27 +38,20 @@ public class CustomerReportController {
 
 	private static Logger applicationLog = LoggerFactory.getLogger(CustomerReportController.class);
 
-	private static final String TRANSACTION_REPORT = "TransactionReport";
+	
+	@RequestMapping(value = "/report", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	public Map<String, ArrayList<Record>> singleFileUpload(@RequestParam("file") MultipartFile file)
+			throws JAXBException, IOException {
 
-	private static final String CSV_REPORT = "CSVReport";
-
-	@GetMapping("/")
-	public String index() {
-		return TRANSACTION_REPORT;
-	}
-
-	@PostMapping("/upload")
-	public ModelAndView singleFileUpload(@RequestParam("file") MultipartFile file) throws JAXBException, IOException {
-
-		ModelAndView modelAndView = new ModelAndView();
+		Map<String, ArrayList<Record>> result = new HashMap<>();
 		if (file.isEmpty()) {
-			modelAndView.setViewName(TRANSACTION_REPORT);
-			return modelAndView;
+			return result;
 		}
 
 		try {
 
 			StringReader fileContent = new StringReader(new String(file.getBytes()));
+
 			Records records = null;
 
 			if (file.getOriginalFilename().endsWith(".xml")) {
@@ -61,32 +59,19 @@ public class CustomerReportController {
 			} else {
 				records = CommonUtil.parseCSV(fileContent);
 			}
-			
-			
+
 			applicationLog.info("Transaction Records : {}", records.getRecord());
-			
-			modelAndView = transactionService.initiateTransaction(records, modelAndView);
-			
+
+			result = transactionService.initiateTransaction(records);
+
 			applicationLog.info("Transaction Sucessfully Completed!! ");
 
 		} catch (Exception e) {
 
-			modelAndView.addObject("errorMessage", "Invalid File content. Please upload a valid file!!!!");
 			applicationLog.error("Error occured while processing :{}", e.getMessage());
 		}
 
-		modelAndView.setViewName(TRANSACTION_REPORT);
-		return modelAndView;
-	}
-
-	@GetMapping("/transactionReport")
-	public String getTransactionReport() {
-		return TRANSACTION_REPORT;
-	}
-
-	@GetMapping("/CSVReport")
-	public String getCsvReport() {
-		return CSV_REPORT;
+		return result;
 	}
 
 }

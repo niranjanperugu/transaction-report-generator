@@ -1,7 +1,36 @@
 
 /* Application Module */
-var transactionReportApp = angular.module('transactionReportApp', ['ngFileUpload']);
+var transactionReportApp = angular.module('transactionReportApp', ['ngFileUpload', 'ngRoute']);
 
+transactionReportApp.config(['$routeProvider',
+
+	function ($routeProvider) {
+
+	$routeProvider.when('/frontend', {
+
+	templateUrl: 'frontend1.html',
+
+	controller: 'CSVReportCtrl'
+
+	}).
+
+	when('/backend', {
+
+	templateUrl: 'backend1.html',
+
+	controller: 'transactionReportCtrl'
+
+	}).
+
+	otherwise({
+
+	redirectTo: '/frontend'
+
+	});
+
+	}
+
+	]);
 
 /* This Controller is used to parse the csv data and sort data based on selected colomn */
 transactionReportApp.controller('CSVReportCtrl', function($scope, $window, $filter) {
@@ -77,16 +106,42 @@ transactionReportApp.controller('CSVReportCtrl', function($scope, $window, $filt
 
 
 /* This Controller is used to validate the file type */
-transactionReportApp.controller('transactionReportCtrl', function($scope, $window) {
-    $scope.Upload = function() {
+transactionReportApp.controller('transactionReportCtrl', function($scope, $window,  $http) {
+	 
+	    
+	$scope.Upload = function($files) {
         var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.xml)$/;
         if (!regex.test($scope.SelectedFile.name.toLowerCase())) {
             $window.alert("Please upload a valid CSV or XML file!!!");
         }
+         else{
+        	var fd = new FormData();
+            fd.append("file", $scope.SelectedFile["constructor"]);
+
+        /*    $http.post("http://localhost:8080/transaction/report", fd, {
+                headers: {'Content-Type': 'multipart/form-data' },
+                transformRequest: angular.identity
+            })*/
+            
+            $http.post('http://localhost:8080/transaction/report', fd, {
+        transformRequest: function(data, headersGetterFunction) {
+            return data;
+        },
+        headers: { 'Content-Type': 'multipart/form-data' }
+        }).then( _success, _error );
+        }
     }
 
-    $scope.SelectFile = function(file) {
-        $scope.SelectedFile = file;
-        $scope.uploadStatus = true;
-    };
+	  $scope.SelectFile = function(file) {
+	        $scope.SelectedFile = file;
+	        $scope.uploadStatus = true;
+	    };
+    
+    function _success(response) {
+    	console.log(response.data);
+    }
+
+    function _error(response) {
+        console.log(response.statusText);
+    }
 });

@@ -1,0 +1,7 @@
+---
+applications:
+- name: transaction-report-generator
+  memory: 1G
+  random-route: true
+  path: target/transaction-report-generator.war
+
